@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (remote console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "/opt/dotnet/dotnet",
+            "args": ["/home/pi/app/Face.Presentation.App.dll"],
+            "cwd": "/home/pi/app",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "pipeTransport": {
+                "pipeCwd": "${workspaceFolder}",
+                "pipeProgram": "${env:ChocolateyInstall}\\bin\\PLINK.EXE",
+                "pipeArgs": [
+                    "-i",
+                    "${env:USERPROFILE}\\.ssh\\id_rsa.ppk",
+                    "pi@raspi4"
+                ],
+                "debuggerPath": "/home/pi/vsdbg/vsdbg"
+            }
+        }
+}
