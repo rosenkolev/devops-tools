@@ -1,0 +1,62 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Face.Presentation.App.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build:publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "-r",
+                "linux-arm",
+                "/p:ShowLinkerSizeComparison=true",
+                "${workspaceFolder}/Face.Presentation.App.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "type": "process",
+            "command": "pscp",
+            "args": [
+                "-i",
+                "${env:USERPROFILE}\\.ssh\\id_rsa.ppk",
+                "-v",
+                "-r",
+                ".\\*",
+                "pi@raspi4:/home/pi/app"
+            ],
+            "dependsOn": "build:publish",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/bin/Debug/netcoreapp2.2/linux-arm/publish"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "shutdown",
+            "type": "process",
+            "command": "plink",
+            "args": [
+                "-i",
+                "${env:USERPROFILE}\\.ssh\\id_rsa.ppk",
+                "pi@raspi4",
+                "'shutdown -h now'"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
