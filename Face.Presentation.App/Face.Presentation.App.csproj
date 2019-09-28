@@ -2,6 +2,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <NetStandardImplicitPackageVersion>2.2.6</NetStandardImplicitPackageVersion>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
+  <ItemGroup Label="Projects and Files Reference">
+    <ProjectReference Include="..\V4l2\V4l2.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face" Version="2.5.0-preview.1" />
+  </ItemGroup>
 </Project>
