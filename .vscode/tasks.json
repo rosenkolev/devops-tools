@@ -13,6 +13,19 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build:cli:win",
+            "group": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "-r",
+                "win10-x64",
+                "${workspaceFolder}/Face.Presentation.Cli/Face.Presentation.Cli.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build:publish",
             "group": "build",
             "command": "dotnet",
@@ -46,7 +59,29 @@
                 "panel": "new"
             },
             "options": {
-                "cwd": "${workspaceFolder}/Face.Presentation.App/bin/Debug/netcoreapp2.2/linux-arm/publish"
+                "cwd": "${workspaceFolder}/Face.Presentation.App/bin/Debug/netcoreapp3.1/linux-arm/publish"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "copy-file",
+            "type": "process",
+            "command": "pscp",
+            "args": [
+                "-i",
+                "${env:USERPROFILE}\\.ssh\\id_rsa.ppk",
+                "-v",
+                "-r",
+                "pi@raspi4:/home/pi/face.wav",
+                "D:\\face.wav"
+            ],
+            "dependsOn": "build:publish",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": []
         },
@@ -58,7 +93,7 @@
                 "-i",
                 "${env:USERPROFILE}\\.ssh\\id_rsa.ppk",
                 "pi@raspi4",
-                "'shutdown -h now'"
+                "'poweroff'"
             ],
             "problemMatcher": []
         }

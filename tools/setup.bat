@@ -9,7 +9,7 @@ REM send my public ssh key to rasbery so I can ssh without entering password
 type %USERPROFILE%\.ssh\id_rsa.pub | plink -ssh -pw %1 pi@raspi4 "umask 077; test -d .ssh || mkdir .ssh ; cat >> .ssh/authorized_keys"
 
 REM Install dotnet runtime on the raspbery
-plink -ssh -pw %1 pi@raspi4 -m install_dotnet.sh
+plink -ssh -pw %1 pi@raspi4 -m install_dotnet_3.1.sh
 
 REM install dotnet remote debuger on the raspbery
 plink -ssh -pw %1 pi@raspi4 "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -r linux-arm -v latest -l ~/vsdbg"
@@ -18,7 +18,9 @@ REM Create working directory
 plink -ssh -pw %1 pi@raspi4 "mkdir app"
 
 REM Install vide to image app fswebcam
+plink -ssh -pw %1 pi@raspi4 "sudo apt update && sudo apt upgrade"
 plink -ssh -pw %1 pi@raspi4 "sudo apt install v4l-utils libc6-dev libgdiplus libx11-dev"
+plink -ssh -pw %1 pi@raspi4 "sudo apt install ffmpeg"
 
 REM configure ppk.Manual step here
 puttygen %USERPROFILE%\.ssh\id_rsa -o %USERPROFILE%\.ssh\id_rsa.ppk -O private
