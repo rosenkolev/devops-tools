@@ -26,7 +26,7 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build:publish",
+            "label": "build:publish:debug",
             "group": "build",
             "command": "dotnet",
             "type": "process",
@@ -42,24 +42,50 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish",
+            "label": "build:publish:release",
+            "group": "build",
+            "command": "dotnet",
             "type": "process",
-            "command": "pscp",
             "args": [
-                "-i",
-                "${env:USERPROFILE}\\.ssh\\id_rsa.ppk",
-                "-v",
+                "publish",
                 "-r",
-                ".\\*",
-                "pi@raspi4:/home/pi/app"
+                "linux-arm",
+                "-c",
+                "Release",
+                "--self-contained",
+                "false",
+                "/p:ShowLinkerSizeComparison=true",
+                "${workspaceFolder}/Face.Presentation.App/Face.Presentation.App.csproj"
             ],
-            "dependsOn": "build:publish",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "deploy:debug",
+            "type": "shell",
+            "command": "${workspaceFolder}\\tools\\deploy.bat",
+            "args": ["app-debug"],
+            "dependsOn": "build:publish:debug",
             "presentation": {
                 "reveal": "always",
                 "panel": "new"
             },
             "options": {
-                "cwd": "${workspaceFolder}/Face.Presentation.App/bin/Debug/netcoreapp3.1/linux-arm/publish"
+                "cwd": "${workspaceFolder}/Face.Presentation.App/bin/Release/netcoreapp3.1/linux-arm/publish"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "deploy",
+            "type": "shell",
+            "command": "${workspaceFolder}\\tools\\deploy.bat",
+            "args": ["app"],
+            "dependsOn": "build:publish:release",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/Face.Presentation.App/bin/Release/netcoreapp3.1/linux-arm/publish"
             },
             "problemMatcher": []
         },
@@ -93,7 +119,7 @@
                 "-i",
                 "${env:USERPROFILE}\\.ssh\\id_rsa.ppk",
                 "pi@raspi4",
-                "'poweroff'"
+                "'sudo poweroff'"
             ],
             "problemMatcher": []
         }

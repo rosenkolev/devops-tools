@@ -3,18 +3,27 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.Azure.CognitiveServices;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.Extensions.Logging;
 
-namespace Face.Presentation.App
+namespace Face.Presentation.App.Controls
 {
-    public sealed class AzureFaceClient
+    public sealed class FaceDetectControl : IDisposable
     {
         private readonly IFaceClient _client;
+        private readonly ILogger _logger;
 
-        public AzureFaceClient(IFaceClient client)
+        public FaceDetectControl(ILogger logger, IFaceClient client)
         {
             _client = client;
+            _logger = logger;
+        }
+
+        public FaceDetectControl(ILogger logger, string key, string region)
+            : this(logger, Authenticate($"https://{region}.api.cognitive.microsoft.com", key))
+        {
         }
 
         private static string PersonGroupName => "mentormate";
@@ -36,34 +45,34 @@ namespace Face.Presentation.App
             return null;
         }
 
-        private static async Task<IList<Guid>> DetectFaceIds(IFaceClient client, Stream stream)
+        private async Task<IList<Guid>> DetectFaceIds(IFaceClient client, Stream stream)
         {
-            Console.WriteLine("Azure detect faces");
+            _logger.LogDebug("Azure detect faces");
             
             try
             {
                 var faces = await client.Face.DetectWithStreamAsync(stream);
-                Console.WriteLine($"{faces.Count} face(s) detected.");
+                _logger.LogDebug($"{faces.Count} face(s) detected.");
                 return faces.Where(it => it.FaceId.HasValue).Select(it => it.FaceId.Value).ToList();
             }
             catch (APIErrorException ex)
             {
-                Console.WriteLine(ex.Response.ReasonPhrase);
-                Console.WriteLine(ex.Response.Content);
+                _logger.LogError(ex.Response.ReasonPhrase);
+                _logger.LogError(ex.Response.Content);
                 throw;
             }
         }
 
-        private static async Task<NameAndUserDataContract> IdentifyPersonsAsync(IFaceClient client, IList<Guid> faceIdList)
+        private async Task<NameAndUserDataContract> IdentifyPersonsAsync(IFaceClient client, IList<Guid> faceIdList)
         {
             var founds = await client.Face.IdentifyAsync(faceIdList, PersonGroupName, confidenceThreshold: 0.7);
-            Console.WriteLine($"Identified {founds.Count} persons.");
+            _logger.LogDebug($"Identified {founds.Count} persons.");
             foreach (var identifyResult in founds)
             {
-                Console.WriteLine("Result of face: {0}", identifyResult.FaceId);
+                _logger.LogDebug("Result of face: {0}", identifyResult.FaceId);
                 if (identifyResult.Candidates.Count == 0)
                 {
-                    Console.WriteLine("No one identified");
+                    _logger.LogDebug("No one identified");
                 }
                 else
                 {
@@ -75,6 +84,11 @@ namespace Face.Presentation.App
             }
 
             return null;
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
     }
 }

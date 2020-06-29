@@ -15,7 +15,7 @@ REM install dotnet remote debuger on the raspbery
 plink -ssh -pw %1 pi@raspi4 "curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -r linux-arm -v latest -l ~/vsdbg"
 
 REM Create working directory
-plink -ssh -pw %1 pi@raspi4 "mkdir app"
+plink -ssh -pw %1 pi@raspi4 "mkdir app && mkdir app-debug"
 
 REM Install vide to image app fswebcam
 plink -ssh -pw %1 pi@raspi4 "sudo apt update && sudo apt upgrade"
